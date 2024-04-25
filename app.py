@@ -35,7 +35,9 @@ import libs
 API_KEY = st.secrets["API_KEY"]
 
 sendmail = True
-EN_BASE_PROMPT = [{"role": "SYSTEM", "message": "You are a helpful assistant who can answer or handle all my queries!"}]
+
+SYS_MSG = "You are a helpful assistant who can answer or handle all my queries! If your reponses are based on the information from web search results, please include the source(s)!"
+EN_BASE_PROMPT = [{"role": "SYSTEM", "message": SYS_MSG}]
 
 class Locale:    
     ai_role_options: List[str]
@@ -259,9 +261,9 @@ def callback_fun(arg):
         SYS_PROMPT = [{"role": "SYSTEM", "message": sys_msg}]
     else:
         if st.session_state.locale is zw:
-            SYS_PROMPT = [{"role": "SYSTEM", "message": "You are a helpful assistant who can answer or handle all my queries! Please reply in Chinese where possible!"}]
+            SYS_PROMPT = [{"role": "SYSTEM", "message": SYS_MSG + "\nPlease reply in Chinese where possible!"}]
         else:
-            SYS_PROMPT =  [{"role": "SYSTEM", "message": "You are a helpful assistant who can answer or handle all my queries!"}]
+            SYS_PROMPT =  [{"role": "SYSTEM", "message": SYS_MSG}]
 
     st.session_state.message = SYS_PROMPT
 
@@ -305,6 +307,13 @@ def get_client_ip():
 
     return ip_address
 
+@st.cache_resource()
+def get_email_info():
+    sender_email = st.secrets["gmail_user"]
+    password = st.secrets["gmail_passwd"]
+
+    return sender_email, password
+
 @st.cache_data(show_spinner=False)
 def save_log(query, res, total_tokens):
     '''
@@ -333,6 +342,7 @@ def save_log(query, res, total_tokens):
     print(f'[{date_time}]: {st.session_state.user}\n')
     print(res+'\n')
 
+
 @st.cache_data(show_spinner=False)
 def send_mail(query, res, total_tokens):
     '''
@@ -347,8 +357,8 @@ def send_mail(query, res, total_tokens):
     # Set up the SMTP server and log into your account
     smtp_server = "smtp.gmail.com"
     port = 587
-    sender_email = st.secrets["gmail_user"]
-    password = st.secrets["gmail_passwd"]
+
+    sender_email, password = get_email_info()
 
     server = smtplib.SMTP(smtp_server, port)
     server.starttls()
@@ -503,32 +513,42 @@ def Chat_Completion(query: str, chat_history: list):
         chat_history.pop(1)
         chat_history.pop(1)
 
-    print("=============== FOR DEBUG ==============================")
-    print(f"History: {chat_history}")
-    print(f"Query: {query}")
-    print("================ END DEBUG =============================")
+    #print("=============== FOR DEBUG ==============================")
+    #print(f"History: {chat_history}")
+    #print(f"Query: {query}")
+    #print("================ END DEBUG =============================")
 
-    #co = Create_Model()
-    co = cohere.Client(api_key=API_KEY)
-    response = co.chat(
-        chat_history=chat_history,
-        message=query,
-        model="command-r-plus",
-        temperature=0.35,
-        max_tokens=3800,
+    co = Create_Model()
+    if st.session_state.enable_search:
+        print("Search Web Enabled!")
+        response = co.chat(
+            chat_history=chat_history,
+            message=query,
+            model="command-r-plus",
+            temperature=0.3,
+            max_tokens=3800,
 
-        #chat_history=[
-        #    {"role": "USER", "message": "Who discovered gravity?"},
-        #    {
-        #        "role": "CHATBOT",
-        #        "message": "The man who is widely credited with discovering gravity is Sir Isaac Newton",
-        #    },
-        #],
-        #message="What year was he born?",
+            #chat_history=[
+            #    {"role": "USER", "message": "Who discovered gravity?"},
+            #    {
+            #        "role": "CHATBOT",
+            #        "message": "The man who is widely credited with discovering gravity is Sir Isaac Newton",
+            #    },
+            #],
+            #message="What year was he born?",
 
-        # perform web search before answering the question. You can also use your own custom connector.
-        #connectors=[{"id": "web-search"}],
-    )
+            # perform web search before answering the question. You can also use your own custom connector.
+            connectors=[{"id": "web-search"}],
+        )
+    else:
+        response = co.chat(
+            chat_history=chat_history,
+            message=query,
+            model="command-r-plus",
+            temperature=0.3,
+            max_tokens=3800,
+        )
+
     print(f"Outputs from the Model: {response}")
 
     ret_context = response.text
@@ -621,7 +641,6 @@ def main(argv):
                 if uploaded_file is not None:
                     #bytes_data = uploaded_file.read()
                     st.session_state.loaded_content = libs.GetContexts(uploaded_file)
-                    print(f"Content loaded: {len(st.session_state.loaded_content)}")
                     st.session_state.enable_search = False
             with col2:
                 st.write("")
@@ -633,10 +652,8 @@ def main(argv):
             c1, c2 = st.columns(2)
             with c1:
                 st.session_state.new_topic_button = st.button(label=st.session_state.locale.chat_clear_btn[0], key="newTopic", on_click=Clear_Chat)
-####### UNABLE to RUN on streamlit.app ##########################
-#            with c2:
-#                st.session_state.enable_search = st.checkbox(label=st.session_state.locale.enable_search_label[0], value=st.session_state.enable_search)
-#################################################################
+            with c2:
+                st.session_state.enable_search = st.checkbox(label=st.session_state.locale.enable_search_label[0], value=st.session_state.enable_search)
         with st.session_state.input_placeholder.form(key="my_form", clear_on_submit = True):
             user_input = st.text_area(label=st.session_state.locale.chat_placeholder[0], value=st.session_state.user_text, max_chars=6000)
             send_button = st.form_submit_button(label=st.session_state.locale.chat_run_btn[0])
@@ -645,11 +662,10 @@ def main(argv):
             print(f"{st.session_state.user}: {user_input}")
             user_input = user_input.strip()
             if(user_input != ''):
-                if st.session_state.enable_search:
-                    #st.session_state.loaded_content = libs.Search_WiKi(user_input)
-                    st.session_state.loaded_content = libs.Search_DuckDuckGo(user_input)
-                    print(f"Results found: {len(st.session_state.loaded_content)}")
-                    #print(st.session_state.loaded_content)
+                #if st.session_state.enable_search:
+                #    #st.session_state.loaded_content = libs.Search_WiKi(user_input)
+                #    st.session_state.loaded_content = libs.Search_DuckDuckGo(user_input)
+                #    print(f"Results found: {len(st.session_state.loaded_content)}")
                 if st.session_state.loaded_content != "":
                     prompt = f"<CONTEXT>{st.session_state.loaded_content}</CONTEXT>\n\n {user_input}"
                 else:
