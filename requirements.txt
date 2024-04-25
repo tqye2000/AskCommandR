@@ -1,0 +1,11 @@
+transformers
+langchain
+langchain_community
+langdetect
+gtts
+pypdf
+streamlit
+streamlit_javascript
+duckduckgo_search
+wikipedia
+cohere
