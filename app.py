@@ -655,7 +655,7 @@ def main(argv):
             with c2:
                 st.session_state.enable_search = st.checkbox(label=st.session_state.locale.enable_search_label[0], value=st.session_state.enable_search)
         with st.session_state.input_placeholder.form(key="my_form", clear_on_submit = True):
-            user_input = st.text_area(label=st.session_state.locale.chat_placeholder[0], value=st.session_state.user_text, max_chars=6000)
+            user_input = st.text_area(label=st.session_state.locale.chat_placeholder[0], value=st.session_state.user_text, max_chars=6600)
             send_button = st.form_submit_button(label=st.session_state.locale.chat_run_btn[0])
 
         if send_button :
