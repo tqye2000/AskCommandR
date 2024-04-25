@@ -142,7 +142,7 @@ en = Locale(
     ai_role_prefix="You are an assistant",
     ai_role_postfix="Answer as concisely as possible.",
     role_tab_label="🤖 Sys Role",
-    title="Ask LLM",
+    title="Ask Command R+",
     choose_language="选择界面语言",
     language="English",
     lang_code='en',
@@ -171,7 +171,7 @@ zw = Locale(
     ai_role_prefix="You are an assistant",
     ai_role_postfix="Answer as concisely as possible.",
     role_tab_label="🤖 AI角色",
-    title="Ask LLM",
+    title="Ask Command R+",
     choose_language="Choose UI Language",
     language="中文·",
     lang_code='zh-CN',
@@ -195,12 +195,12 @@ zw = Locale(
     stt_placeholder="播放",
 )
 
-st.set_page_config(page_title="Ask LLM", 
+st.set_page_config(page_title="Ask Command R+", 
                    initial_sidebar_state="expanded", 
                    layout='wide',
                    menu_items={
                     'Report a bug': "mailto:tqye2006@gmail.com",
-                    'About': "# For Experiment Only.Feb-2024"}
+                    'About': "# For Experiment Only.April-2024"}
     )
 
 st.markdown(
@@ -563,7 +563,7 @@ def main(argv):
     args = parse_args(sys.argv[1:])
     st.session_state.is_local = args.local
     
-    Main_Title(st.session_state.locale.title[0] + " (v0.0.2)")
+    Main_Title(st.session_state.locale.title[0] + " (v0.0.1)")
 
     #if st.session_state.locale == en:
     #    if st.session_state.is_local:
