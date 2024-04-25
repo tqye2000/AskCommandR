@@ -212,7 +212,7 @@ st.markdown(
                     }}
 
                 .sidebar .sidebar-content {{
-                    width: 40px;
+                    width: 36px;
                 }}
 
         </style>""".format(padding_top=0, padding_bottom=1),
