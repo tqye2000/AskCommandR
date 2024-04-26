@@ -4,6 +4,9 @@ langchain_community
 langdetect
 gtts
 pypdf
+rapidocr-onnxruntime
+unstructured
+docx
 streamlit
 streamlit_javascript
 duckduckgo_search

@@ -4,6 +4,7 @@
 # History
 # When      | Who            | What
 # 25/04/2024| Tian-Qing Ye   | Created
+# 26/04/2024| Tian-Qing Ye   | Bug fixing
 ##################################################################
 import streamlit as st
 from streamlit_javascript import st_javascript
@@ -631,17 +632,24 @@ def main(argv):
         st.session_state.gtts_placeholder = st.empty()
 
         st.session_state.uploading_file_placeholder = st.empty()
+        st.session_state.uploaded_filename_placeholder = st.empty()
         st.session_state.buttons_placeholder = st.empty()
         st.session_state.input_placeholder = st.empty()
 
         with st.session_state.uploading_file_placeholder:
-            col1, col2 = st.columns(spec=[4,1])
+            col1, col2 = st.columns(spec=[2,1])
             with col1:
                 uploaded_file = st.file_uploader(label=st.session_state.locale.file_upload_label[0], type=['docx', 'txt', 'pdf', 'csv'],key=st.session_state.key, accept_multiple_files=False,)
                 if uploaded_file is not None:
                     #bytes_data = uploaded_file.read()
-                    st.session_state.loaded_content = libs.GetContexts(uploaded_file)
-                    st.session_state.enable_search = False
+                    st.session_state.loaded_content, ierror = libs.GetContexts(uploaded_file)
+                    if ierror != 0:
+                        print(f"Loading document failed:  {ierror}")
+                        st.session_state.uploaded_filename_placeholder.warning(f"Loading document failed:  {ierror}")
+                    else:
+                        print(f"The size of the document:  {len(st.session_state.loaded_content)}")
+                        st.session_state.uploaded_filename_placeholder.write(uploaded_file.name)
+                        st.session_state.enable_search = False
             with col2:
                 st.write("")
                 st.write("")
@@ -739,6 +747,19 @@ if __name__ == "__main__":
                     }}
                     .sidebar .sidebar-content {{
                         width: 200px;
+                    }}
+                    .st-emotion-cache-fis6aj {{
+                        display: none;
+                    }}
+                    .st-emotion-cache-9ycgxx {{
+                        display: none;
+                    }}
+                    button {{
+                        /*    height: auto; */
+                        width: 120px;
+                        height: 32px;
+                        padding-top: 10px !important;
+                        padding-bottom: 10px !important;
                     }}
                 </style>""".format(padding_top=1, padding_bottom=10),
             unsafe_allow_html=True,

@@ -2,10 +2,13 @@ from langchain_community.document_loaders import UnstructuredFileLoader
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import UnstructuredPowerPointLoader
+from langchain_community.document_loaders import TextLoader
+
 #from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.tools import DuckDuckGoSearchResults
 import wikipedia
 
+from tempfile import NamedTemporaryFile
 import os
 import re
 
@@ -97,7 +100,8 @@ def get_docx_data(filepath:str) -> str:
     '''
     File types: docx
     '''
-    loader = UnstructuredWordDocumentLoader(filepath)
+    loader = UnstructuredWordDocumentLoader(filepath, mode="single")
+#    loader = TextLoader(filepath)
 
     data = loader.load()
     doc = data[0]
@@ -108,7 +112,7 @@ def get_ppt_data(filepath:str) -> str:
     '''
     File types: powerpoint document
     '''
-    loader = UnstructuredPowerPointLoader(filepath)
+    loader = UnstructuredPowerPointLoader(filepath, mode="single")
     docs = loader.load()
     doc = docs[0]
 
@@ -118,17 +122,20 @@ def get_pdf_data(filepath:str) -> str:
     '''
     File types: pdf
     '''
-    loader = PyPDFLoader(filepath)
+    contents = ""
+    loader = PyPDFLoader(filepath, extract_images=True)
     docs = loader.load()
-    doc = docs[0]
+    for doc in docs:
+        #(f"docs: {doc}")
+        contents += doc.page_content + "\n\n"
 
-    return doc.page_content
+    return contents
 
 def get_unstructured_data(filepath) -> str:
     '''
     File types: text, html
     '''
-    loader = UnstructuredFileLoader(filepath)
+    loader = UnstructuredFileLoader(filepath, mode="single")
     docs = loader.load()
     doc = docs[0]
 
@@ -194,7 +201,6 @@ def Read_From_File(filepath:str) -> dict:
 
     return ret
 
-from tempfile import NamedTemporaryFile
 
 def GetContexts(uploaded_file):
 
@@ -213,7 +219,7 @@ def GetContexts(uploaded_file):
                 temp.write(uploaded_file.getbuffer())
                 tempFile = temp.name
                 Content = get_pdf_data(temp.name)
-        elif filepath.split(".")[-1] in ['pptx', 'PPTX']:
+        elif filepath.split(".")[-1] in ['pptx', 'PPTX', 'ppt']:
             with NamedTemporaryFile(suffix="pptx", delete=False) as temp:
                 temp.write(uploaded_file.getbuffer())
                 tempFile = temp.name
@@ -234,7 +240,7 @@ def GetContexts(uploaded_file):
         except Exception as ex:
             pass
 
-    return Content.strip()
+    return Content.strip(), error
 
 def Search_WiKi(query: str) -> str:
 
