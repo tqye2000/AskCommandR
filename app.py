@@ -646,7 +646,7 @@ def main(argv):
                     st.session_state.loaded_content, ierror = libs.GetContexts(uploaded_file)
                     if ierror != 0:
                         print(f"Loading document failed:  {ierror}")
-                        st.session_state.uploaded_filename_placeholder.warning(f"Loading Document Error:  {ierror}")
+                        st.session_state.uploaded_filename_placeholder.warning(st.session_state.loaded_content)
                     else:
                         doc_size=len(st.session_state.loaded_content)
                         print(f"The size of the document:  {doc_size}")

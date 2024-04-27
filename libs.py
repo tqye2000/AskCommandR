@@ -232,7 +232,7 @@ def GetContexts(uploaded_file):
                 Content = text_preprocessing(temp.name)
     except Exception as ex:
         print(f"Loading file content failed: {ex}")
-        Content = ""
+        Content = f"Loading file failed: {ex}"
         error = 1
 
     if os.path.exists(tempFile):
@@ -241,7 +241,7 @@ def GetContexts(uploaded_file):
         except Exception as ex:
             pass
 
-    return Content.strip(), error
+    return Content, error
 
 def Search_WiKi(query: str) -> str:
 
