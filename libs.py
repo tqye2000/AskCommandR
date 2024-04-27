@@ -123,7 +123,8 @@ def get_pdf_data(filepath:str) -> str:
     File types: pdf
     '''
     contents = ""
-    loader = PyPDFLoader(filepath, extract_images=True)
+    #loader = PyPDFLoader(filepath, extract_images=True)
+    loader = PyPDFLoader(filepath)
     docs = loader.load()
     for doc in docs:
         #(f"docs: {doc}")

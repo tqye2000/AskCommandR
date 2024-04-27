@@ -528,7 +528,7 @@ def Chat_Completion(query: str, chat_history: list):
             model="command-r-plus",
             temperature=0.3,
             max_tokens=3800,
-            prompt_truncation="AUTO_PRESERVE_ORDER",
+            prompt_truncation='AUTO',
             #chat_history=[
             #    {"role": "USER", "message": "Who discovered gravity?"},
             #    {
@@ -548,6 +548,7 @@ def Chat_Completion(query: str, chat_history: list):
             model="command-r-plus",
             temperature=0.3,
             max_tokens=3800,
+            prompt_truncation='AUTO',
         )
 
     print(f"Outputs from the Model: {response}")
@@ -645,10 +646,11 @@ def main(argv):
                     st.session_state.loaded_content, ierror = libs.GetContexts(uploaded_file)
                     if ierror != 0:
                         print(f"Loading document failed:  {ierror}")
-                        st.session_state.uploaded_filename_placeholder.warning(f"Loading document failed:  {ierror}")
+                        st.session_state.uploaded_filename_placeholder.warning(f"Loading Document Error:  {ierror}")
                     else:
-                        print(f"The size of the document:  {len(st.session_state.loaded_content)}")
-                        st.session_state.uploaded_filename_placeholder.write(uploaded_file.name)
+                        doc_size=len(st.session_state.loaded_content)
+                        print(f"The size of the document:  {doc_size}")
+                        st.session_state.uploaded_filename_placeholder.write(f"{uploaded_file.name} [{doc_size}]")
                         st.session_state.enable_search = False
             with col2:
                 st.write("")
@@ -765,7 +767,7 @@ if __name__ == "__main__":
             unsafe_allow_html=True,
     )
 
-    local_css("style.css")
+    #local_css("style.css")
 
     language = st.sidebar.selectbox(st.session_state.locale.choose_language[0], ("English", "中文"), index=st.session_state.lang_index)
     if language == "English":
