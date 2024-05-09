@@ -4,6 +4,7 @@ langchain_community
 langdetect
 gtts
 pypdf
+unstructured
 python-docx
 rapidocr-onnxruntime
 streamlit
