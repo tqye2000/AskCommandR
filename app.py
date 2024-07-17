@@ -551,7 +551,7 @@ def Chat_Completion(query: str, chat_history: list):
         response = co.chat(
             chat_history=chat_history,
             message=query,
-            model="command-r-plus",
+            model="c4ai-command-r-plus",
             temperature=st.session_state.temperature,
             max_tokens=3800,
             prompt_truncation='AUTO',
