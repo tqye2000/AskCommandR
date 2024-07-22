@@ -304,7 +304,7 @@ def get_client_ip():
     ip_address = ""
     try:
         result = st_javascript(script)
-
+        # print(f"ip_result: {result}")
         if isinstance(result, dict) and 'ip' in result:
             ip_address = result['ip']
         else:
@@ -572,7 +572,7 @@ def main(argv):
     st.session_state.is_local = args.local
     
     Main_Title(st.session_state.locale.title[0] + " (v0.0.1)")
-
+    st.session_state.user_ip = get_client_ip()
     #if st.session_state.locale == en:
     #    if st.session_state.is_local:
     #        version = st.selectbox(st.session_state.locale.choose_llm_prompt[0], ("Mixtral-8x7B-Instruct", "CodeQwen1.5-7B-Chat"))
