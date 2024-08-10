@@ -166,7 +166,7 @@ en = Locale(
     username_prompt="Username/password is incorrect",
     password_prompt="Please enter your username and password",
     choose_llm_prompt="Choose Your LLM",
-    support_message="Please report any issues or suggestions to devlab@qq.com\n If you like this App please buy me a :coffee:🌝",
+    support_message="Please report any issues or suggestions to devlab@qq.com\n If you like this App please buy me a :coffee:🌝<p> To use other models：<br><a href=https://gptecho.streamlit.app>OpenAI GPT-4</a><br><a href=https://askmixtral.streamlit.app>Mixtral 8x7B</a>",
     select_placeholder1="Select Model",
     select_placeholder2="Select Role",
     stt_placeholder="Play Audio",
@@ -196,7 +196,7 @@ zw = Locale(
     username_prompt="用户名/密码错误",
     password_prompt="请输入用户名和密码",
     choose_llm_prompt="请选择您想使用的AI模型",
-    support_message="如遇什么问题或有什么建议，反馈，请电 devlab@qq.com\n 另外别忘了请我喝杯咖啡:coffee:🌝",
+    support_message="如遇什么问题或有什么建议，反馈，请电 devlab@qq.com<\n 另外别忘了请我喝杯咖啡:coffee:🌝<p> 使用其它模型：<br><a href=https://gptecho.streamlit.app>OpenAI GPT-4</a>",
     select_placeholder1="选择AI模型",
     select_placeholder2="选择AI的角色",
     stt_placeholder="播放",
@@ -573,28 +573,6 @@ def main(argv):
     
     Main_Title(st.session_state.locale.title[0] + " (v0.0.1)")
     st.session_state.user_ip = get_client_ip()
-    #if st.session_state.locale == en:
-    #    if st.session_state.is_local:
-    #        version = st.selectbox(st.session_state.locale.choose_llm_prompt[0], ("Mixtral-8x7B-Instruct", "CodeQwen1.5-7B-Chat"))
-    #    else:
-    #        version = st.selectbox(st.session_state.locale.choose_llm_prompt[0], ("Mixtral-8x7B-Instruct",)) # CodeQwen cannot be deployed on streamlit space -(
-    #else:
-    #    if st.session_state.is_local:
-    #        version = st.selectbox(st.session_state.locale.choose_llm_prompt[0], ("CodeQwen1.5-7B-Chat", "Mixtral-8x7B-Instruct", ))
-    #    else:
-    #        version = st.selectbox(st.session_state.locale.choose_llm_prompt[0], ("Mixtral-8x7B-Instruct", ))
-    
-    #if version == "Mixtral-8x7B-Instruct":
-    #    # Use Mixtral model
-    #    st.session_state.llm = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-    #    st.session_state.max_new_tokens = 4096
-    #elif version.startswith("CodeQwen"):
-    #    st.session_state.llm = "Qwen/CodeQwen1.5-7B-Chat"
-    #    st.session_state.max_new_tokens = 4096
-    #else:
-    #    # Use Mixtral model
-    #    st.session_state.llm = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-    #    st.session_state.max_new_tokens = 4096
 
     # ====== Build Model ========
     #chain = Create_Model_Chain(st.session_state.llm, st.session_state.max_new_tokens)
@@ -787,7 +765,7 @@ if __name__ == "__main__":
     st.session_state.temperature = st.sidebar.slider(label=st.session_state.locale.temperature_label[0], min_value=0.1, max_value=2.0, value=0.7, step=0.05)
     #st.sidebar.button(st.session_state.locale.chat_clear_btn[0], on_click=Clear_Chat)
     st.sidebar.markdown(st.session_state.locale.chat_clear_note[0])
-    st.sidebar.markdown(st.session_state.locale.support_message[0])
+    st.sidebar.markdown(st.session_state.locale.support_message[0], unsafe_allow_html=True)
     
     #st.session_state.user, st.session_state.authentication_status, st.session_state.user_id = Login()
     #if st.session_state.user != None and st.session_state.user != "" and st.session_state.user != "invalid":
