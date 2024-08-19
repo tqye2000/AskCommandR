@@ -6,11 +6,10 @@
 # 25/04/2024| Tian-Qing Ye   | Created
 # 26/04/2024| Tian-Qing Ye   | Bug fixing
 # 14/05/2024| Tian-Qing Ye   | Allow controlling temperature
+# 19/08/2024| Tian-Qing Ye   | Further updated
 ##################################################################
 import streamlit as st
 from streamlit_javascript import st_javascript
-from streamlit import runtime
-from streamlit.runtime.scriptrunner import get_script_run_ctx
 import cohere
 
 import yaml
@@ -291,10 +290,9 @@ def local_css(file_name):
 
 @st.cache_data()
 def get_geolocation(ip_address):
-    #reader = geolite2.reader()
-    #location = reader.get(ip_address)
-    #geolite2.close()
-
+    '''
+    Get location of an IP address
+    '''
     url =f'https://ipapi.co/{ip_address}/json/'
 
     try:
@@ -453,43 +451,6 @@ def Show_Audio_Player(ai_content: str) -> None:
         #st.session_state.gtts_placeholder.error(err)
         save_log("Error", str(ex), 0)
 
-def Login() -> str:
-    with open('./config.yaml') as file:
-        config = yaml.load(file, Loader=SafeLoader)
-
-    random_key = randomword(10)
-    authenticator = stauth.Authenticate(
-        config['credentials'],
-        config['cookie']['name'],
-        random_key,
-        config['cookie']['expiry_days'],
-        config['preauthorized']
-    )
-
-    name, authentication_status, username = authenticator.login(st.session_state.locale.login_prompt[0], 'main')
-
-    if authentication_status:
-        if name:
-            authenticator.logout(st.session_state.locale.logout_prompt[0], 'main')
-            st.write(f'Welcome *{name}*')
-    #        st.title('Some content')
-        else:
-            authentication_status = None
-            st.warning(st.session_state.locale.password_prompt[0])
-            name = ""
-    elif authentication_status == False:
-        st.error(st.session_state.locale.username_prompt[0])
-        name = "invalid"
-    elif authentication_status == None:
-        st.warning(st.session_state.locale.password_prompt[0])
-        name = ""
-    else:
-        st.warning(st.session_state.locale.password_prompt[0])
-        name = ""
-    
-
-    return name, authentication_status, username
-
 
 def Clear_Chat() -> None:
     st.session_state.messages = []        
@@ -499,13 +460,6 @@ def Clear_Chat() -> None:
     st.session_state["context_select" + current_user + "value"] = 'General Assistant'
     st.session_state["context_input" + current_user + "value"] = ""
 
-    st.session_state.key += "1"     # HACK use the following two lines to reset update the file_uploader key
-    st.rerun()
-
-
-def Delete_Files():
-
-    st.session_state.loaded_content = ""
     st.session_state.key += "1"     # HACK use the following two lines to reset update the file_uploader key
     st.rerun()
 
@@ -599,7 +553,7 @@ def main(argv):
     args = parse_args(sys.argv[1:])
     st.session_state.is_local = args.local
     
-    Main_Title(st.session_state.locale.title[0] + " (v0.0.1)")
+    Main_Title(st.session_state.locale.title[0] + " (v0.0.3)")
     st.session_state.user_ip = get_client_ip()
     st.session_state.user_location = get_geolocation(st.session_state.user_ip)
 
@@ -651,26 +605,19 @@ def main(argv):
         st.session_state.input_placeholder = st.empty()
 
         with st.session_state.uploading_file_placeholder:
-            col1, col2 = st.columns(spec=[2,1])
-            with col1:
-                #uploaded_file = st.file_uploader(label=st.session_state.locale.file_upload_label[0], type=['docx', 'txt', 'pdf', 'csv', 'h', 'cpp', 'py', 'java'],key=st.session_state.key, accept_multiple_files=False,)
-                uploaded_file = st.file_uploader(label=st.session_state.locale.file_upload_label[0], type=['docx', 'txt', 'pdf', 'csv'],key=st.session_state.key, accept_multiple_files=False,)
-                if uploaded_file is not None:
-                    #bytes_data = uploaded_file.read()
-                    st.session_state.loaded_content, ierror = libs.GetContexts(uploaded_file)
-                    if ierror != 0:
-                        print(f"Loading document failed:  {ierror}")
-                        st.session_state.uploaded_filename_placeholder.warning(st.session_state.loaded_content)
-                    else:
-                        doc_size=len(st.session_state.loaded_content)
-                        print(f"The size of the document:  {doc_size}")
-                        st.session_state.uploaded_filename_placeholder.write(f"{uploaded_file.name} [{doc_size}]")
-                        st.session_state.enable_search = False
-            with col2:
-                st.write("")
-                st.write("")
-                st.write("")
-                st.session_state.clear_doc_button = st.button(label=st.session_state.locale.clear_doc_btn[0], key="clearDoc", on_click=Delete_Files)
+            #uploaded_file = st.file_uploader(label=st.session_state.locale.file_upload_label[0], type=['docx', 'txt', 'pdf', 'csv', 'h', 'cpp', 'py', 'java'],key=st.session_state.key, accept_multiple_files=False,)
+            uploaded_file = st.file_uploader(label=st.session_state.locale.file_upload_label[0], type=['docx', 'txt', 'pdf', 'csv'],key=st.session_state.key, accept_multiple_files=False,)
+            if uploaded_file is not None:
+                #bytes_data = uploaded_file.read()
+                st.session_state.loaded_content, ierror = libs.GetContexts(uploaded_file)
+                if ierror != 0:
+                    print(f"Loading document failed:  {ierror}")
+                    st.session_state.uploaded_filename_placeholder.warning(st.session_state.loaded_content)
+                else:
+                    doc_size=len(st.session_state.loaded_content)
+                    print(f"The size of the document:  {doc_size}")
+                    st.session_state.uploaded_filename_placeholder.write(f"{uploaded_file.name} [{doc_size}]")
+                    st.session_state.enable_search = False
 
         with st.session_state.buttons_placeholder:
             c1, c2 = st.columns(2)
@@ -780,7 +727,7 @@ if __name__ == "__main__":
                         padding-top: 10px !important;
                         padding-bottom: 10px !important;
                     }}
-                </style>""".format(padding_top=1, padding_bottom=10),
+                </style>""".format(padding_top=2, padding_bottom=10),
             unsafe_allow_html=True,
     )
 
@@ -795,7 +742,6 @@ if __name__ == "__main__":
         st.session_state.lang_index = 1
         
     st.session_state.temperature = st.sidebar.slider(label=st.session_state.locale.temperature_label[0], min_value=0.1, max_value=2.0, value=0.5, step=0.05)
-    #st.sidebar.button(st.session_state.locale.chat_clear_btn[0], on_click=Clear_Chat)
     st.sidebar.markdown(st.session_state.locale.chat_clear_note[0])
     st.sidebar.markdown(st.session_state.locale.support_message[0], unsafe_allow_html=True)
     
