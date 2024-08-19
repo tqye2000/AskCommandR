@@ -26,6 +26,8 @@ from typing import List
 import random, string
 from random import randint
 import argparse
+import requests
+import json
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -286,6 +288,31 @@ def local_css(file_name):
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     f.close()
 
+
+@st.cache_data()
+def get_geolocation(ip_address):
+    #reader = geolite2.reader()
+    #location = reader.get(ip_address)
+    #geolite2.close()
+
+    url =f'https://ipapi.co/{ip_address}/json/'
+
+    try:
+        # Make the GET requests
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+
+        location = {
+            "city" : data.get("city)"),
+            "region" : data.get("region"),
+            "country" : data.get("country_name"),
+            }
+        return location
+    except requests.RequestException as ex:
+        print(f"An error: {ex}")
+        return None
+
 def get_client_ip():
     '''
     workaround solution, via 'https://api.ipify.org?format=json' for get client ip
@@ -335,6 +362,7 @@ def save_log(query, res, total_tokens):
     f.write(f'[CommandR]: {res}\n')
     f.write(f'[Tokens]: {total_tokens}\n')
     f.write(f"User ip: {st.session_state.user_ip}")
+    f.write(f"User Geo: {st.session_state.user_location}")
     f.write(100 * '-' + '\n\n') 
 
     try:
@@ -356,7 +384,7 @@ def send_mail(query, res, total_tokens):
     '''
     now = datetime.now() # current date and time
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-    message = f'[{date_time}] {st.session_state.user}:({st.session_state.user_ip}):\n'
+    message = f'[{date_time}] {st.session_state.user}:({st.session_state.user_ip}: {st.session_state.user_location}):\n'
     message += f'[You]: {query}\n'
     message += f'[CommandR]: {res}\n'
     message += f'[Tokens]: {total_tokens}\n'
@@ -573,6 +601,7 @@ def main(argv):
     
     Main_Title(st.session_state.locale.title[0] + " (v0.0.1)")
     st.session_state.user_ip = get_client_ip()
+    st.session_state.user_location = get_geolocation(st.session_state.user_ip)
 
     # ====== Build Model ========
     #chain = Create_Model_Chain(st.session_state.llm, st.session_state.max_new_tokens)
@@ -694,6 +723,9 @@ if __name__ == "__main__":
         
     if "user_ip" not in st.session_state:
         st.session_state.user_ip = get_client_ip()
+
+    if "user_loacation" not in st.session_state:
+        st.session_state.user_location = {}
 
     if "is_local" not in st.session_state:
         st.session_state.is_local = False

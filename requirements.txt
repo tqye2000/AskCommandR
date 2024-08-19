@@ -12,3 +12,4 @@ streamlit_javascript
 duckduckgo_search
 wikipedia
 cohere
+requests

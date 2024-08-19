@@ -228,6 +228,16 @@ def GetContexts(uploaded_file):
                 temp.write(uploaded_file.getbuffer())
                 tempFile = temp.name
                 Content = get_ppt_data(temp.name)
+        elif filepath.split(".")[-1] in ['cpp', 'CPP']:
+            with NamedTemporaryFile(suffix="cpp", delete=False) as temp:
+                temp.write(uploaded_file.getbuffer())
+                tempFile = temp.name
+                Content = text_preprocessing(temp.name)
+        elif filepath.split(".")[-1] in ['py']:
+            with NamedTemporaryFile(suffix="py", delete=False) as temp:
+                temp.write(uploaded_file.getbuffer())
+                tempFile = temp.name
+                Content = text_preprocessing(temp.name)
         else:
             with NamedTemporaryFile(suffix="txt", delete=False) as temp:
                 temp.write(uploaded_file.getbuffer())
