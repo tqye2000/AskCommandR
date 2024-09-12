@@ -7,6 +7,7 @@
 # 26/04/2024| Tian-Qing Ye   | Bug fixing
 # 14/05/2024| Tian-Qing Ye   | Allow controlling temperature
 # 19/08/2024| Tian-Qing Ye   | Further updated
+# 12/09/2024| Tian-Qing Ye   | Add '汉语新解' role. System prompt from 作者: 李继刚
 ##################################################################
 import streamlit as st
 from streamlit_javascript import st_javascript
@@ -478,7 +479,8 @@ def Show_Messages():
             messages_str.append(f"{role}: {text}")
     
     msg = str("\n\n".join(messages_str))
-    st.markdown(msg, unsafe_allow_html=True)
+    #st.markdown(msg, unsafe_allow_html=True)
+    st.write(msg, unsafe_allow_html=True)
     
 
 @st.cache_resource()
