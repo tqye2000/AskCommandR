@@ -7,7 +7,6 @@
 # 26/04/2024| Tian-Qing Ye   | Bug fixing
 # 14/05/2024| Tian-Qing Ye   | Allow controlling temperature
 # 19/08/2024| Tian-Qing Ye   | Further updated
-# 12/09/2024| Tian-Qing Ye   | Add '汉语新解' role. System prompt from 作者: 李继刚
 ##################################################################
 import streamlit as st
 from streamlit_javascript import st_javascript
