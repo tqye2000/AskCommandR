@@ -437,18 +437,12 @@ def Show_Audio_Player(ai_content: str) -> None:
         print("Language:", lang)
         if lang in ['zh', 'zh-cn', 'en', 'de', 'fr'] :
             tts = gTTS(text=ai_content, lang=lang)
-            #if st.session_state['locale'] is zw:
-            #    tts = gTTS(text=ai_content, lang='zh')
-            #else:
-            #    tts = gTTS(text=ai_content, lang='en')
             tts.write_to_fp(sound_file)
             st.write(st.session_state.locale.stt_placeholder)
             st.audio(sound_file)
     except gTTSError as err:
-        #st.session_state.gtts_placeholder.error(err)
         save_log("Error", str(err), 0)
     except Exception as ex:
-        #st.session_state.gtts_placeholder.error(err)
         save_log("Error", str(ex), 0)
 
 
@@ -484,7 +478,8 @@ def Show_Messages():
             messages_str.append(f"{role}: {text}")
     
     msg = str("\n\n".join(messages_str))
-    st.markdown(msg, unsafe_allow_html=True)
+    #st.markdown(msg, unsafe_allow_html=True)
+    st.write(msg, unsafe_allow_html=True)
     
 
 @st.cache_resource()
@@ -557,9 +552,6 @@ def main(argv):
     st.session_state.user_ip = get_client_ip()
     st.session_state.user_location = get_geolocation(st.session_state.user_ip)
 
-    # ====== Build Model ========
-    #chain = Create_Model_Chain(st.session_state.llm, st.session_state.max_new_tokens)
-
     ## ----- AI Role  --------
     st.session_state.role_placeholder = st.empty()        # showing system role selected
     st.session_state.role_placeholder = st.info(st.session_state.locale.role_tab_label[0] + ": **" + st.session_state["context_select" + current_user + "value"] + "**")
@@ -605,7 +597,6 @@ def main(argv):
         st.session_state.input_placeholder = st.empty()
 
         with st.session_state.uploading_file_placeholder:
-            #uploaded_file = st.file_uploader(label=st.session_state.locale.file_upload_label[0], type=['docx', 'txt', 'pdf', 'csv', 'h', 'cpp', 'py', 'java'],key=st.session_state.key, accept_multiple_files=False,)
             uploaded_file = st.file_uploader(label=st.session_state.locale.file_upload_label[0], type=['docx', 'txt', 'pdf', 'csv'],key=st.session_state.key, accept_multiple_files=False,)
             if uploaded_file is not None:
                 #bytes_data = uploaded_file.read()
