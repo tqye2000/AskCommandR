@@ -273,7 +273,7 @@ def callback_fun(arg):
         else:
             SYS_PROMPT =  [{"role": "SYSTEM", "message": SYS_MSG}]
 
-    st.session_state.message = SYS_PROMPT
+    st.session_state.messages = SYS_PROMPT
 
 @st.cache_data()
 def get_app_folder():
