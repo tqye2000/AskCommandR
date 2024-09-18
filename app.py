@@ -273,7 +273,7 @@ def callback_fun(arg):
         else:
             SYS_PROMPT =  [{"role": "SYSTEM", "message": SYS_MSG}]
 
-    st.session_state.message = SYS_PROMPT
+    st.session_state.messages = SYS_PROMPT
 
 @st.cache_data()
 def get_app_folder():
@@ -491,6 +491,9 @@ def Create_Model():
 
 def Chat_Completion(query: str, chat_history: list):
     '''
+    Chat with the model
+    params: query: str, chat_history: list
+    return: str
     '''
 
     if(len(chat_history) > MAX_MESSAGES+1):
