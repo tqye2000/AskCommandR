@@ -167,7 +167,7 @@ en = Locale(
     username_prompt="Username/password is incorrect",
     password_prompt="Please enter your username and password",
     choose_llm_prompt="Choose Your LLM",
-    support_message="Please report any issues or suggestions to devlab@qq.com\n If you like this App please buy me a :coffee:🌝<p> To use other models：<br><a href=https://gptecho.streamlit.app>OpenAI GPT-4</a><br><a href=https://claudeecho.streamlit.app/>Claude</a><br><a href=https://askmixtral.streamlit.app>Mixtral 8x7B</a><p>Other Tools：<br><a href=https://removebj.streamlit.app/>Background Remover</a>",
+    support_message="Please report any issues or suggestions to devlab@qq.com\n If you like this App please buy me a :coffee:🌝<p> To use other models：<br> https://gptecho.streamlit.app OpenAI GPT-4<br>https://claudeecho.streamlit.app Claude<br><p>Other Tools：<br><a href=https://removebj.streamlit.app/>Background Remover</a>",
     select_placeholder1="Select Model",
     select_placeholder2="Select Role",
     stt_placeholder="Play Audio",
