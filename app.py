@@ -197,7 +197,7 @@ zw = Locale(
     username_prompt="用户名/密码错误",
     password_prompt="请输入用户名和密码",
     choose_llm_prompt="请选择您想使用的AI模型",
-    support_message="如遇什么问题或有什么建议，反馈，请电 tqye@yahoo.com<br> 使用其它模型：<br><a Gemini href=https://geminiecho.streamlit.app</a><br>OpenAI GPT-4o https://gptecho.streamlit.app<br>Claude https://claudeecho.streamlit.app<p> 其它小工具：<br><a https://imagicapp.streamlit.app/>照片增强，去背景等</a>",
+    support_message="如遇什么问题或有什么建议，反馈，请电 tqye@yahoo.com<br> 使用其它模型：<br><a href=https://geminiecho.streamlit.app>Gemini models</a><br>OpenAI GPT-4o https://gptecho.streamlit.app<br>Claude https://claudeecho.streamlit.app<p> 其它小工具：<br><a href=https://imagicapp.streamlit.app>照片增强，去背景等</a>",
     select_placeholder1="选择AI模型",
     select_placeholder2="选择AI的角色",
     stt_placeholder="播放",
