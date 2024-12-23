@@ -167,7 +167,7 @@ en = Locale(
     username_prompt="Username/password is incorrect",
     password_prompt="Please enter your username and password",
     choose_llm_prompt="Choose Your LLM",
-    support_message="Please report any issues or suggestions to tqye@yahoo.com\n If you like this App please buy me a :coffee:🌝 https://buymeacoffee.com/tqye2006<p> To use other models：<br>Gemini https://geminiecho.streamlit.app<br>OpenAI GPT-4o https://gptecho.streamlit.app <br> Claude https://claudeecho.streamlit.app<br><p>Other Tools：<br>Image Magic https://imagicapp.streamlit.app",
+    support_message="Please report any issues or suggestions to tqye@yahoo.com\n If you like this App please <a href='https://buymeacoffee.com/tqye2006'>buy me a :coffee:🌝</a><p> To use other models：<br><a href='https://geminiecho.streamlit.app'>Gemini Models</a><br><a href='https://gptecho.streamlit.app'>OpenAI GPT-4o</a><br><a href='https://claudeecho.streamlit.app'>Claude</a><br><p>Other Tools：<br><a  href='https://imagicapp.streamlit.app'>Image Magic</a>",
     select_placeholder1="Select Model",
     select_placeholder2="Select Role",
     stt_placeholder="Play Audio",
