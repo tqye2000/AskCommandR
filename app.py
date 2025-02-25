@@ -522,7 +522,7 @@ def Chat_Completion(query: str, chat_history: list):
             message=query,
             model="command-r-plus",
             temperature=st.session_state.temperature,
-            max_tokens=3800,
+            max_tokens=4094,
             prompt_truncation='AUTO',
             #chat_history=[
             #    {"role": "USER", "message": "Who discovered gravity?"},
@@ -542,7 +542,7 @@ def Chat_Completion(query: str, chat_history: list):
             message=query,
             model="command-r-plus",
             temperature=st.session_state.temperature,
-            max_tokens=5120,
+            max_tokens=4095,
             prompt_truncation='AUTO',
         )
 
