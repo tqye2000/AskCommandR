@@ -436,7 +436,6 @@ def send_mail(query, res, total_tokens):
 
 @st.cache_resource()
 def Main_Title(text: str) -> None:
-
     st.markdown(f'<p style="background-color:#ffffff;color:#049ca4;font-weight:bold;font-size:24px;border-radius:2%;">{text}</p>', unsafe_allow_html=True)
 
 def Show_Audio_Player(ai_content: str) -> None:
@@ -669,7 +668,7 @@ if __name__ == "__main__":
 
     # Initiaiise session_state elements
     if "locale" not in st.session_state:
-        st.session_state.locale = en
+        st.session_state.locale = zw
 
     if "lang_index" not in st.session_state:
         st.session_state.lang_index = 0
@@ -739,13 +738,13 @@ if __name__ == "__main__":
 
     #local_css("style.css")
 
-    language = st.sidebar.selectbox(st.session_state.locale.choose_language[0], ("English", "中文"), index=st.session_state.lang_index)
+    language = st.sidebar.selectbox(st.session_state.locale.choose_language[0], ("中文","English"), index=st.session_state.lang_index)
     if language == "English":
         st.session_state.locale = en
-        st.session_state.lang_index = 0
+        st.session_state.lang_index = 1
     else:
         st.session_state.locale = zw
-        st.session_state.lang_index = 1
+        st.session_state.lang_index = 0
         
     st.session_state.temperature = st.sidebar.slider(label=st.session_state.locale.temperature_label[0], min_value=0.1, max_value=2.0, value=0.7, step=0.05)
     st.sidebar.markdown(st.session_state.locale.chat_clear_note[0])
