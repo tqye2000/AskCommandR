@@ -7,6 +7,7 @@
 # 26/04/2024| Tian-Qing Ye   | Bug fixing
 # 14/05/2024| Tian-Qing Ye   | Allow controlling temperature
 # 19/08/2024| Tian-Qing Ye   | Further updated
+# 25/02/2025| Tian-Qing Ye   | Added more features
 ##################################################################
 import streamlit as st
 from streamlit_javascript import st_javascript
@@ -42,6 +43,9 @@ sendmail = True
 SYS_MSG = "You are a helpful assistant who can answer or handle all my queries! If your reponses are based on the information from web search results, please include the source(s)!"
 EN_BASE_PROMPT = [{"role": "SYSTEM", "message": SYS_MSG}]
 
+TOTAL_TRIALS = int(st.secrets["total_trials"])
+VALID_USERS = st.secrets["valid_users"].split(',')
+
 class Locale:    
     ai_role_options: List[str]
     ai_role_prefix: str
@@ -69,6 +73,7 @@ class Locale:
     support_message: str
     select_placeholder1: str
     select_placeholder2: str
+    excced_message: str
     stt_placeholder: str
     
     def __init__(self, 
@@ -98,6 +103,7 @@ class Locale:
                 support_message,
                 select_placeholder1,
                 select_placeholder2,
+                excced_message,
                 stt_placeholder,
                 ):
         self.ai_role_options = ai_role_options, 
@@ -126,6 +132,7 @@ class Locale:
         self.support_message = support_message,
         self.select_placeholder1= select_placeholder1,
         self.select_placeholder2= select_placeholder2,
+        self.excced_message = excced_message,
         self.stt_placeholder = stt_placeholder,
 
 
@@ -170,6 +177,7 @@ en = Locale(
     support_message="Please report any issues or suggestions to tqye@yahoo.com\n If you like this App please <a href='https://buymeacoffee.com/tqye2006'>buy me a :coffee:🌝</a><p> To use other models：<br><a href='https://geminiecho.streamlit.app'>Gemini Models</a><br><a href='https://gptecho.streamlit.app'>OpenAI GPT-4o</a><br><a href='https://claudeecho.streamlit.app'>Claude</a><br><p>Other Tools：<br><a  href='https://imagicapp.streamlit.app'>Image Magic</a>",
     select_placeholder1="Select Model",
     select_placeholder2="Select Role",
+    excced_message="# You have exceeded today's trial limit. Please try again later! Or contact tqye@yahoo.com for an account.",
     stt_placeholder="Play Audio",
 )
 
@@ -200,6 +208,7 @@ zw = Locale(
     support_message="如遇什么问题或有什么建议，反馈，请电 tqye@yahoo.com<br> 使用其它模型：<br><a href='https://geminiecho.streamlit.app'>Gemini models</a><br><a href='https://gptecho.streamlit.app'>OpenAI GPT-4o</a><br><a href='https://claudeecho.streamlit.app'>Claude</a><p> 其它小工具：<br><a href='https://imagicapp.streamlit.app'>照片增强，去背景等</a>",
     select_placeholder1="选择AI模型",
     select_placeholder2="选择AI的角色",
+    excced_message="# 你已经超过了今天的试用额度。请稍后再试！或联系管理员 tqye@yahoo.com 申请一个账号。",
     stt_placeholder="播放",
 )
 
@@ -533,7 +542,7 @@ def Chat_Completion(query: str, chat_history: list):
             message=query,
             model="command-r-plus",
             temperature=st.session_state.temperature,
-            max_tokens=3800,
+            max_tokens=5120,
             prompt_truncation='AUTO',
         )
 
@@ -621,7 +630,7 @@ def main(argv):
                 st.session_state.enable_search = st.checkbox(label=st.session_state.locale.enable_search_label[0], value=st.session_state.enable_search)
         with st.session_state.input_placeholder.form(key="my_form", clear_on_submit = True):
             user_input = st.text_area(label=st.session_state.locale.chat_placeholder[0], value=st.session_state.user_text, max_chars=6600)
-            send_button = st.form_submit_button(label=st.session_state.locale.chat_run_btn[0])
+            send_button = st.form_submit_button(label=st.session_state.locale.chat_run_btn[0], disabled=st.session_state.total_queries > TOTAL_TRIALS)
 
         if send_button :
             print(f"{st.session_state.user}: {user_input}")
@@ -643,7 +652,7 @@ def main(argv):
                 st.session_state.messages += [{"role": "CHATBOT", "message": generated_text}]
 
 				# counting the number of messages
-                st.session_state.message_count += 1
+                st.session_state.total_queries += 1
                 #st.session_state.total_tokens += tokens
                 with msg_placeholder:
                     Show_Messages()
@@ -651,6 +660,9 @@ def main(argv):
                     Show_Audio_Player(generated_text)
 
                 save_log(user_input, generated_text, st.session_state.total_tokens)
+
+        if st.session_state.user not in VALID_USERS and st.session_state.total_queries > TOTAL_TRIALS:
+            st.warning(st.session_state.locale.excced_message[0])
 
 ##############################
 if __name__ == "__main__":
@@ -680,17 +692,17 @@ if __name__ == "__main__":
     if "model_response" not in st.session_state:
         st.session_state.model_response = ""
 
-    if "message_count" not in st.session_state:
-        st.session_state.message_count = 0
+    if "temperature" not in st.session_state:
+        st.session_state.temperature = 0.7
 
     if "user_text" not in st.session_state:
         st.session_state.user_text = ""
 
-    if 'max_new_tokens' not in st.session_state:
-        st.session_state.max_new_tokens = 1024
-
     if 'total_tokens' not in st.session_state:
         st.session_state.total_tokens = 0
+
+    if 'total_queries' not in st.session_state:
+        st.session_state.total_queries = 0
 
     if 'key' not in st.session_state:
         st.session_state.key = str(randint(1000, 10000000))    
@@ -735,7 +747,7 @@ if __name__ == "__main__":
         st.session_state.locale = zw
         st.session_state.lang_index = 1
         
-    st.session_state.temperature = st.sidebar.slider(label=st.session_state.locale.temperature_label[0], min_value=0.1, max_value=2.0, value=0.5, step=0.05)
+    st.session_state.temperature = st.sidebar.slider(label=st.session_state.locale.temperature_label[0], min_value=0.1, max_value=2.0, value=0.7, step=0.05)
     st.sidebar.markdown(st.session_state.locale.chat_clear_note[0])
     st.sidebar.markdown(st.session_state.locale.support_message[0], unsafe_allow_html=True)
     
@@ -749,13 +761,24 @@ if __name__ == "__main__":
     #    if "context_input" + current_user + "value" not in st.session_state:
     #        st.session_state["context_input" + current_user + "value"] = ""
 
-    current_user = st.session_state.user
-    if "context_select" + current_user + "value" not in st.session_state:
-        st.session_state["context_select" + current_user + "value"] = 'General Assistant'    
-    if "context_input" + current_user + "value" not in st.session_state:
-        st.session_state["context_input" + current_user + "value"] = ""
+    # current_user = st.session_state.user
+    # if "context_select" + current_user + "value" not in st.session_state:
+    #     st.session_state["context_select" + current_user + "value"] = 'General Assistant'    
+    # if "context_input" + current_user + "value" not in st.session_state:
+    #     st.session_state["context_input" + current_user + "value"] = ""
     
-    main(sys.argv)
+    # Create a input box for inviting user to enter their given name
+    st.write("欢迎来到AI世界/Welcome to the AI World！")
+    st.session_state.user = st.text_input(label="请输入你的ID/Please Enter Your ID：", value="", max_chars=20)
+    if st.session_state.user != None and st.session_state.user != "" and st.session_state.user != "invalid":
+        current_user = st.session_state.user
+
+        if "context_select" + current_user + "value" not in st.session_state:
+            st.session_state["context_select" + current_user + "value"] = 'General Assistant'
+        if "context_input" + current_user + "value" not in st.session_state:
+            st.session_state["context_input" + current_user + "value"] = ""
+
+        main(sys.argv)
 
 
     
