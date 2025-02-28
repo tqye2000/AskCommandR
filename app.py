@@ -8,6 +8,7 @@
 # 14/05/2024| Tian-Qing Ye   | Allow controlling temperature
 # 19/08/2024| Tian-Qing Ye   | Further updated
 # 25/02/2025| Tian-Qing Ye   | Added more features
+# 28/02/2025| Tian-Qing Ye   | Further updated
 ##################################################################
 import streamlit as st
 from streamlit_javascript import st_javascript
@@ -436,7 +437,7 @@ def send_mail(query, res, total_tokens):
 
 @st.cache_resource()
 def Main_Title(text: str) -> None:
-    st.markdown(f'<p style="background-color:#ffffff;color:#049ca4;font-weight:bold;font-size:24px;border-radius:2%;">{text}</p>', unsafe_allow_html=True)
+    st.markdown(f'<h1 style="background-color:#ffffff;color:#049ca4;font-weight:bold;font-size:22px;border-radius:2%;">{text}</h1>', unsafe_allow_html=True)
 
 def Show_Audio_Player(ai_content: str) -> None:
     sound_file = BytesIO()
@@ -559,7 +560,8 @@ def main(argv):
     args = parse_args(sys.argv[1:])
     st.session_state.is_local = args.local
     
-    Main_Title(st.session_state.locale.title[0] + " (v0.0.3)")
+    Main_Title(st.session_state.locale.title[0] + " (v0.0.4)")
+    st.write(f"Hello {st.session_state.user}!")
     st.session_state.user_ip = get_client_ip()
     st.session_state.user_location = get_geolocation(st.session_state.user_ip)
 
@@ -767,17 +769,26 @@ if __name__ == "__main__":
     #     st.session_state["context_input" + current_user + "value"] = ""
     
     # Create a input box for inviting user to enter their given name
-    st.write("欢迎来到AI世界/Welcome to the AI World！")
-    st.session_state.user = st.text_input(label="请输入你的ID/Please Enter Your ID：", value="", max_chars=20)
-    if st.session_state.user != None and st.session_state.user != "" and st.session_state.user != "invalid":
+    if st.session_state.user == "" or st.session_state.user is None:
+        st.write("欢迎来到AI世界/Welcome to the AI World！")
+        st.session_state.user = st.text_input(label="请输入你的ID/Please Enter Your ID：", value="", max_chars=20)
+        if st.session_state.user != None and st.session_state.user != "" and st.session_state.user != "invalid":  # This checks if the user input is not empty
+            # Initialize context for the user
+            current_user = st.session_state.user
+            if "context_select" + current_user + "value" not in st.session_state:
+                st.session_state["context_select" + current_user + "value"] = 'General Assistant'
+            if "context_input" + current_user + "value" not in st.session_state:
+                st.session_state["context_input" + current_user + "value"] = ""
+            
+            main(sys.argv)  # Start the main application if the user ID is provided
+    else:        
+        # Initialize context for the user
         current_user = st.session_state.user
-
         if "context_select" + current_user + "value" not in st.session_state:
             st.session_state["context_select" + current_user + "value"] = 'General Assistant'
         if "context_input" + current_user + "value" not in st.session_state:
             st.session_state["context_input" + current_user + "value"] = ""
-
-        main(sys.argv)
+        main(sys.argv) # Start the main application if the user ID is provided
 
 
     
