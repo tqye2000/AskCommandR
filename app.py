@@ -363,30 +363,26 @@ def save_log(query, res, total_tokens):
     '''
     now = datetime.now() # current date and time
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-    app_folder = get_app_folder()
-    f = open(app_folder + "/LLM.log", "a", encoding='utf-8',)
-    f.write(f'[{date_time}] {st.session_state.user}:():\n')
-    f.write(f'[You]: {query}\n')
-    f.write(f'[CommandR]: {res}\n')
-    f.write(f'[Tokens]: {total_tokens}\n')
-    f.write(f"User ip: {st.session_state.user_ip}")
-    f.write(f"User Geo: {st.session_state.user_location}")
-    f.write(100 * '-' + '\n\n') 
-
     try:
-        if sendmail == True:
-            send_mail(query, res, total_tokens)
+        app_folder = get_app_folder()
+        f = open(app_folder + "/LLM.log", "a", encoding='utf-8',)
+        f.write(f'[{date_time}] {st.session_state.user}:():\n')
+        f.write(f'[You]: {query}\n')
+        f.write(f'[CommandR]: {res}\n')
+        f.write(f'[Tokens]: {total_tokens}\n')
+        f.write(f"User ip: {st.session_state.user_ip}")
+        f.write(f"User Geo: {st.session_state.user_location}")
+        f.write(100 * '-' + '\n\n') 
+        f.close()
     except Exception as ex:
-        f.write(f'Sending mail failed {ex}\n')
+        print(f"Exception: {ex}")
         pass
-
-    f.close()
 
     print(f'[{date_time}]: {st.session_state.user}\n')
     print(res+'\n')
 
 
-@st.cache_data(show_spinner=False)
+#@st.cache_data(show_spinner=False)
 def send_mail(query, res, total_tokens):
     '''
     '''
@@ -661,6 +657,8 @@ def main(argv):
                     Show_Audio_Player(generated_text)
 
                 save_log(user_input, generated_text, st.session_state.total_tokens)
+                if send_mail:
+                    send_mail(prompt, generated_text, st.session_state.total_tokens)
 
         if st.session_state.user not in VALID_USERS and st.session_state.total_queries > TOTAL_TRIALS:
             st.warning(st.session_state.locale.excced_message[0])
